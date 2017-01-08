@@ -549,6 +549,7 @@ public class NewGameOptionsFrame extends Frame
             }
 
             scenDropdown = jcb;
+            scenDropdown.setEnabled(false);
             initInterface_Opt1(op, jcb, true, true, bp, gbl, gbc);
                 // adds jcb, and a checkbox which will toggle this OTYPE_STR's op.boolValue
 

@@ -2068,7 +2068,6 @@ public class SOCPlayerClient
 
                 cardLayout.show(this, CONNECT_OR_PRACTICE_PANEL);
                 validate();
-                connectOrPracticePane.clickConnCancel();
                 connectOrPracticePane.setTopText(err);
                 connectOrPracticePane.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
@@ -2776,12 +2775,6 @@ public class SOCPlayerClient
 
             // Connect to it
             client.net.connect("localhost", tport);  // I18N: no need to localize this hostname
-
-            // Ensure we can't "connect" to another, too
-            if (connectOrPracticePane != null)
-            {
-                connectOrPracticePane.startedLocalServer();
-            }
 
             // Ensure we can type a nickname, or click "New Game" if one is already entered.
             // This lets player create a game after starting a practice game (which sets nickname)
@@ -6286,7 +6279,7 @@ public class SOCPlayerClient
         String host = null;  // from args, if not empty
         int port = -1;
 
-        Version.printVersionText(System.out, "Java Settlers Client ");
+        System.out.println("Los Colonos de Catan Version Johny y Mary !! ... y Yenko !!");
 
         if (args.length != 0)
         {
@@ -6310,9 +6303,9 @@ public class SOCPlayerClient
         gameDisplay = new GameAwtDisplay((args.length == 0), client);
         client.setGameDisplay(gameDisplay);
 
-        Frame frame = new Frame(client.strings.get("pcli.main.title", Version.version()));  // "JSettlers client {0}"
-        frame.setBackground(new Color(Integer.parseInt("61AF71",16)));
-        frame.setForeground(Color.black);
+        Frame frame = new Frame("Los Colonos de Catan Version Johny y Mary !! ... y Yenko !!");
+        frame.setBackground(new Color(59, 89, 152));
+        frame.setForeground(Color.white);
         // Add a listener for the close event
         frame.addWindowListener(gameDisplay.createWindowAdapter());
 

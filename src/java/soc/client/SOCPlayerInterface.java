@@ -1405,15 +1405,8 @@ public class SOCPlayerInterface extends Frame
         {
             EventQueue.invokeLater(new ResetBoardConfirmDialog(gameDisplay, this));
             return;
-            // ResetBoardConfirmDialog will call resetBoardRequest(false) if its Restart button is clicked
         }
 
-        if (client.getServerVersion(game) < 1100)
-        {
-            textDisplay.append("*** " + strings.get("reset.server.support.too.old") + "\n");
-                // "This server does not support board reset, server is too old."
-            return;
-        }
         if (game.getResetVoteActive())
         {
             textDisplay.append("*** " + strings.get("reset.voting.already.active") + "\n");
