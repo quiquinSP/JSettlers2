@@ -71,7 +71,6 @@ import java.awt.event.TextEvent;
 import java.awt.event.TextListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -604,13 +603,12 @@ public class SOCPlayerInterface extends Frame
         sbFixBHasMouse = false;
         if (firstCall && is6player)
             addMouseListener(this);  // react when mouse leaves the Frame
-
+        
         textDisplay = new SnippingTextArea("", 40, 80, TextArea.SCROLLBARS_VERTICAL_ONLY, 80);
         textDisplay.setFont(new Font("SansSerif", Font.PLAIN, 10));
         textDisplay.setBackground(new Color(255, 230, 162));
         textDisplay.setForeground(Color.black);
         textDisplay.setEditable(false);
-        add(textDisplay);
         if (is6player)
             textDisplay.addMouseListener(this);
 
@@ -621,7 +619,6 @@ public class SOCPlayerInterface extends Frame
         chatDisplay.setEditable(false);
         if (is6player)
             chatDisplay.addMouseListener(this);
-        add(chatDisplay);
 
         textInput = new TextField();
         textInput.setFont(new Font("SansSerif", Font.PLAIN, 10));
@@ -639,7 +636,7 @@ public class SOCPlayerInterface extends Frame
         textInput.setEditable(false);
         textInputIsInitial = false;  // due to "please wait"
         textInput.setText(strings.get("base.please.wait"));  // "Please wait..."
-        add(textInput);
+        //add(textInput);
         textInput.addActionListener(this);
         if (is6player)
             textInput.addMouseListener(this);
@@ -668,7 +665,7 @@ public class SOCPlayerInterface extends Frame
         add(buildingPanel);
 
         /**
-         * initialize the game board display and add it to the interface
+         * initialize the game board display and add it to the interfacetextDisplay
          */
         boardPanel = new SOCBoardPanel(this);
         boardPanel.setBackground(new Color(63, 86, 139));  // sea blue; briefly visible at start before water tiles are drawn
