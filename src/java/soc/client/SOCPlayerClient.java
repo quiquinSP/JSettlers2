@@ -68,6 +68,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import soc.baseclient.SOCDisplaylessPlayerClient;
 import soc.disableDebug.D;
 
@@ -101,6 +103,7 @@ import soc.util.SOCGameList;
 import soc.util.SOCServerFeatures;
 import soc.util.SOCStringManager;
 import soc.util.Version;
+import soc.winner.SOCWinner;
 
 /**
  * Standalone client for connecting to the SOCServer. (For applet see {@link SOCApplet}.)
@@ -2013,7 +2016,14 @@ public class SOCPlayerClient
                 } else {
                     pi = playerInterfaces.get(tryGm);
                     if (pi != null)
-                    {
+                    {        if (SOCWinner.winner()) {
+                    	SwingUtilities.invokeLater(new Runnable() {	
+            				@Override
+            				public void run() {
+            					SOCWinner.createWinnerDialog();
+            				}
+            			});
+                    }
                         // we have a window with it
                         gs = pi.getGame().getGameState();
                         if (gs < SOCGame.OVER)
@@ -6297,6 +6307,15 @@ public class SOCPlayerClient
                 System.err.println("Invalid port: " + args[1]);
                 System.exit(1);
             }
+        }
+        
+        if (SOCWinner.winner()) {
+        	SwingUtilities.invokeLater(new Runnable() {	
+				@Override
+				public void run() {
+					SOCWinner.createWinnerDialog();
+				}
+			});
         }
 
         client = new SOCPlayerClient();

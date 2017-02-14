@@ -1,25 +1,67 @@
 package soc.winner;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Properties;
 
-public class SocWinner {
+import javax.swing.JOptionPane;
+
+public class SOCWinner {
 	
 	private static final String password = "424242";
 	
 	public static final String md5Pass = encDec(password);
 	
-	private static final int totalWinCount = 4;
+	private static int totalWinCount = 3;
 	
 	private static int winCount = 0;
 	
 	public static void addWin() {
 		winCount++;
+		saveWins();
+	}
+	
+	private static void loadWins() {
+		
+		Properties prop = new Properties();
+		InputStream input = null;
+		try {
+			input = new FileInputStream("game.properties");
+			// load a properties file
+			prop.load(input);
+			// get the property value and print it out
+			winCount = Integer.parseInt(prop.getProperty("games.won"));
+		} catch (IOException e){e.printStackTrace();}
+		
+	}
+	
+	private static void saveWins() {	
+		Properties prop = new Properties();
+		OutputStream output = null;
+		try {
+			output = new FileOutputStream("game.properties");
+			// set the properties value
+			prop.setProperty("games.won", Integer.toString(winCount));
+			prop.store(output, null);
+
+		} catch (IOException io) {io.printStackTrace();}
 	}
 	
 	public static boolean winner(){
+		loadWins();
 		return (winCount == totalWinCount);
 	}
+	
+    public static void createWinnerDialog() {
+    	JOptionPane.showMessageDialog(null,"Enhorabuena Mary y Johny ... una ultima cosa, si digo 'SHA1' y '" + SOCWinner.md5Pass + "'.\n"
+    			+ "El codigo de la caja obtendreis pero debeis elegir sabiamente. P.D. Soy un hacha de la criptografia :P\n"
+    			+ "Si quereis buscar en vez de usar el ingenio ... https://github.com/quiquinSP/JSettlers2");
+    }
 	
 	public static String encDec(String password) {
 		

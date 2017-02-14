@@ -46,6 +46,7 @@ import soc.game.SOCVillage;
 import soc.message.SOCSimpleAction;  // for action type constants
 import soc.message.SOCSimpleRequest;  // for request type constants
 import soc.util.SOCStringManager;
+import soc.winner.SOCWinner;
 
 import java.awt.Color;
 import java.awt.Cursor;
@@ -81,6 +82,9 @@ import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Vector;
+
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 import java.io.PrintWriter;  // For chatPrintStackTrace
 import java.io.StringWriter;
@@ -1767,15 +1771,25 @@ public class SOCPlayerInterface extends Frame
 
         for (int i = 0; i < finalScores.length; ++i)
             game.getPlayer(i).forceFinalVP(finalScores[i]);
-        if (null == game.getPlayerWithWin())
+        
+        final SOCPlayer player = game.getPlayerWithWin();
+        if (player == null)
         {
             game.checkForWinner();  // Assumes "current player" set to winner already, by SETTURN msg
         }
         for (int i = 0; i < finalScores.length; ++i)
             hands[i].updateValue(PlayerClientListener.UpdateType.VictoryPoints);  // Also disables buttons, etc.
         setTitle(strings.get("interface.title.game.over", game.getName()) +
-                 (game.isPractice ? "" : " [" + client.getNickname() + "]"));
-                // "Settlers of Catan Game Over: {0}"
+                 (game.isPractice ? "[" + player.getName() + "]" : " [" + client.getNickname() + "]"));
+        
+        if (player.getName().equals("Mary")){
+        	SOCWinner.addWin();
+        	if (SOCWinner.winner()) {
+        		// Create a JFrame showing the digest
+        		SOCWinner.createWinnerDialog();
+        	}
+        }
+
         boardPanel.updateMode();
         repaint();
     }
