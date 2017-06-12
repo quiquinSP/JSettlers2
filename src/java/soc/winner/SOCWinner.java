@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 
 public class SOCWinner {
 	
-	private static final String password = "424242";
+	private static final String password = "112952";
 	
 	public static final String md5Pass = encDec(password);
 	
