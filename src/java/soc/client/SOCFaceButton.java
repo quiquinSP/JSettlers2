@@ -156,7 +156,7 @@ public class SOCFaceButton extends Canvas
             /**
              * load the images
              */
-            robotImages[0] = tk.getImage(clazz.getResource(IMAGEDIR + "/robot.gif"));
+            robotImages[0] = tk.getImage(clazz.getResource(IMAGEDIR + "/johny.jpg"));
             tracker.addImage(robotImages[0], 0);
             
             images[1] = tk.getImage(clazz.getResource(IMAGEDIR + "/mary.jpg"));
