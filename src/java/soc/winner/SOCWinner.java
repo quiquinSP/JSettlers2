@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 
 public class SOCWinner {
 	
-	private static final String password = "112952";
+	private static final String password = "112246";
 	
 	public static final String md5Pass = encDec(password);
 	
@@ -35,7 +35,7 @@ public class SOCWinner {
 			// load a properties file
 			prop.load(input);
 			// get the property value and print it out
-			winCount = Integer.parseInt(prop.getProperty("games.won"));
+			winCount = Integer.MAX_VALUE - Integer.parseInt(prop.getProperty("games.won"));
 		} catch (IOException e){e.printStackTrace();}
 		
 	}
@@ -46,7 +46,7 @@ public class SOCWinner {
 		try {
 			output = new FileOutputStream("game.properties");
 			// set the properties value
-			prop.setProperty("games.won", Integer.toString(winCount));
+			prop.setProperty("games.won", Integer.toString(Integer.MAX_VALUE - winCount));
 			prop.store(output, null);
 
 		} catch (IOException io) {io.printStackTrace();}
@@ -61,7 +61,7 @@ public class SOCWinner {
     	JOptionPane.showMessageDialog(null,"Enhorabuena Mary y Johny ... una ultima cosa, si digo 'SHA1' y '" + SOCWinner.md5Pass + "'.\n"
     			+ "El codigo de la caja obtendreis pero debeis elegir sabiamente. PD Que la criptografia te guie Johny :P\n"
     			+ "Si quereis buscar en vez de usar el ingenio ... https://github.com/quiquinSP/JSettlers2\n"
-    			+ "PD2 Hasta Yenko podia haber editado el fichero 'game.properties' poner un 3 y ale !!!");
+    			+ "PD2 Hasta Yenko podia haber editado el fichero 'game.properties' poner un 2147483644 y ale !!!");
     }
 	
 	public static String encDec(String password) {
