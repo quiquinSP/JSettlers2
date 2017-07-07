@@ -59,7 +59,9 @@ public class SOCWinner {
 	
     public static void createWinnerDialog() {
     	JOptionPane.showMessageDialog(null,"Enhorabuena Mary y Johny ... una ultima cosa, si digo 'SHA1' y '" + SOCWinner.md5Pass + "'.\n"
-    			+ "El codigo de la caja obtendreis pero debeis elegir sabiamente. PD Que la criptografia te guie Johny :P\n"
+    			+ "El codigo de la caja obtendreis pero debeis elegir sabiamente. \n"
+    			+ "Efectivamente no se puede hacer copy and paste! \n"
+    			+ "PD Que la criptografia te guie Johny :P\n"
     			+ "Si quereis buscar en vez de usar el ingenio ... https://github.com/quiquinSP/JSettlers2\n"
     			+ "PD2 Hasta Yenko podia haber editado el fichero 'game.properties' poner un 2147483644 y ale !!!");
     }

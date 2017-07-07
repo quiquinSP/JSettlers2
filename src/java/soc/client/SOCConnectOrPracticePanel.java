@@ -38,6 +38,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.SocketTimeoutException;
 
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
 import soc.client.SOCPlayerClient.ClientNetwork;
 import soc.client.SOCPlayerClient.GameAwtDisplay;
 import soc.util.SOCStringManager;
@@ -81,8 +84,8 @@ public class SOCConnectOrPracticePanel extends Panel
         this.gd = gd;
 
         // same Frame setup as in SOCPlayerClient.main
-        setBackground(new Color(Integer.parseInt("61AF71",16)));
-        setForeground(Color.black);
+        setBackground(new Color(Integer.parseInt("3b5998",16)));
+        setForeground(Color.WHITE);
 
         addKeyListener(this);
         initInterfaceElements();
@@ -166,11 +169,16 @@ public class SOCConnectOrPracticePanel extends Panel
         topText.setAlignment(Label.CENTER);
         gbl.setConstraints(topText, gbc);
         bp.add(topText);
+        
+        ImageIcon icon = new ImageIcon(this.getClass().getResource("/soc/client/images/mary_johny_yenko.jpg"));
+        JLabel label = new JLabel();label.setIcon(icon);
+        bp.add(label);
 
         /**
          * Interface setup: Practice
          */
         startGame = new Button(strings.get("pcli.main.practice"));  // "Practice" - same as SOCPlayerClient button
+        startGame.setBackground(new Color(Integer.parseInt("3b987a",16)));
         gbl.setConstraints(startGame, gbc);
         bp.add(startGame);
         startGame.addActionListener(this);

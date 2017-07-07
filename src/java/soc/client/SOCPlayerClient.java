@@ -1874,8 +1874,7 @@ public class SOCPlayerClient
             if (optsAllKnown && knowDefaults)
             {
                 // All done, present the options window frame
-                newGameOptsFrame = NewGameOptionsFrame.createAndShow
-                    (this, null, opts.optionSet, forPracticeServer, false);
+            	askStartGameWithOptions("Yenko os mira !", true, opts.optionSet);
                 return;  // <--- Early return: Show options to user ----
             }
 

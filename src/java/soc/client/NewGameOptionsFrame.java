@@ -148,23 +148,6 @@ public class NewGameOptionsFrame extends Frame
     private Map<String, Checkbox> boolOptCheckboxes;
 
     /**
-     * Scenario info for {@link #scenDropdown}, if {@link #opts} contains the {@code "SC"} game option, or null.
-     * Initialized from {@link SOCScenario#getAllKnownScenarios()} during
-     * {@link #initInterface_Options(Panel, GridBagLayout, GridBagConstraints)},
-     * which is called after any server negotiations.
-     * @since 2.0.00
-     */
-    private Map<String, SOCScenario> allSc;
-
-    /**
-     * Scenario choice dropdown if {@link #opts} contains the {@code "SC"} game option, or null.
-     * When an item is selected, {@link #actionPerformed(ActionEvent)} reacts specially for this control
-     * to update {@code "SC"} within {@link #opts} and enable/disable {@link #scenInfo}.
-     * @since 2.0.00
-     */
-    private JComboBox scenDropdown;
-
-    /**
      * Scenario Info button, for info window about {@link #scenDropdown}'s selected scenario, or null.
      * @see #clickScenarioInfo()
      * @since 2.0.00
@@ -176,13 +159,11 @@ public class NewGameOptionsFrame extends Frame
     /** Cancel button; text is "OK" if {@link #readOnly} */
     private Button cancel;
     private TextField gameName;
+    private String gameNameStr;
     /** msgText is null if readOnly */
     private TextField msgText;
 
-    // // TODO refactor; these are from connectorprac panel
     private static final Color NGOF_BG = new Color(Integer.parseInt("61AF71",16));
-    private static final Color HEADER_LABEL_BG = new Color(220,255,220);
-    private static final Color HEADER_LABEL_FG = new Color( 50, 80, 50);
 
     /**
      * i18n text strings; will use same locale as SOCPlayerClient's string manager.
@@ -239,6 +220,8 @@ public class NewGameOptionsFrame extends Frame
             else
                 gaName = cli.DEFAULT_PRACTICE_GAMENAME + " " + (1 + cli.numPracticeGames);
         }
+        
+        this.gameNameStr = gaName;
 
         // same Frame setup as in SOCPlayerClient.main
         setBackground(NGOF_BG);
@@ -258,6 +241,7 @@ public class NewGameOptionsFrame extends Frame
          */
         gd.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         gd.status.setText("");  // clear "Talking to server..."
+        
     }
 
     /**
@@ -291,57 +275,57 @@ public class NewGameOptionsFrame extends Frame
         bp.setForeground(getForeground());
         bp.setBackground(NGOF_BG);  // If this is omitted, firefox 3.5+ applet uses themed bg-color (seen OS X)
 
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-
-        if ((! readOnly) && (opts != null))
-        {
-            msgText = new TextField(strings.get("game.options.prompt"));  // "Choose options for the new game."
-            msgText.setEditable(false);
-            msgText.setForeground(LABEL_TXT_COLOR);
-            msgText.setBackground(getBackground());
-            gbl.setConstraints(msgText, gbc);
-            bp.add(msgText);
-        }
-
-        /**
-         * Interface setup: Game name
-         */
-        Label L;
-
-        L = new Label(strings.get("game.options.name"));
-        L.setAlignment(Label.RIGHT);
-        L.setBackground(HEADER_LABEL_BG);
-        L.setForeground(HEADER_LABEL_FG);
-        gbc.gridwidth = 2;
-        gbl.setConstraints(L, gbc);
-        bp.add(L);
-
-        gameName = new TextField(20);
-        if (gaName != null)
-            gameName.setText(gaName);
-        if (readOnly)
-        {
-            gameName.setEnabled(false);
-        } else {
-            gameName.addTextListener(this);    // Will enable buttons when field is not empty
-            gameName.addKeyListener(this);     // for ESC/ENTER
-        }
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbl.setConstraints(gameName, gbc);
-        bp.add(gameName);
-
-        /**
-         * Interface setup: Options
-         */
-        initInterface_Options(bp, gbl, gbc);
-
-        /**
-         * Interface setup: Buttons
-         */
-
-        gbc.insets = new Insets(4, 2, 0, 2);  // padding between option rows, buttons
-
+//        gbc.fill = GridBagConstraints.BOTH;
+//        gbc.gridwidth = GridBagConstraints.REMAINDER;
+//
+//        if ((! readOnly) && (opts != null))
+//        {
+//            msgText = new TextField(strings.get("game.options.prompt"));  // "Choose options for the new game."
+//            msgText.setEditable(false);
+//            msgText.setForeground(LABEL_TXT_COLOR);
+//            msgText.setBackground(getBackground());
+//            gbl.setConstraints(msgText, gbc);
+//            bp.add(msgText);
+//        }
+//
+//        /**
+//         * Interface setup: Game name
+//         */
+//        Label L;
+//
+//        L = new Label(strings.get("game.options.name"));
+//        L.setAlignment(Label.RIGHT);
+//        L.setBackground(HEADER_LABEL_BG);
+//        L.setForeground(HEADER_LABEL_FG);
+//        gbc.gridwidth = 2;
+//        gbl.setConstraints(L, gbc);
+//        bp.add(L);
+//
+//        gameName = new TextField(20);
+//        if (gaName != null)
+//            gameName.setText(gaName);
+//        if (readOnly)
+//        {
+//            gameName.setEnabled(false);
+//        } else {
+//            gameName.addTextListener(this);    // Will enable buttons when field is not empty
+//            gameName.addKeyListener(this);     // for ESC/ENTER
+//        }
+//        gbc.gridwidth = GridBagConstraints.REMAINDER;
+//        gbl.setConstraints(gameName, gbc);
+//        bp.add(gameName);
+//
+//        /**
+//         * Interface setup: Options
+//         */
+//        initInterface_Options(bp, gbl, gbc);
+//
+//        /**
+//         * Interface setup: Buttons
+//         */
+//
+//        gbc.insets = new Insets(4, 2, 0, 2);  // padding between option rows, buttons
+//
         if (readOnly)
         {
             cancel = new Button(strings.get("base.ok"));
@@ -375,475 +359,6 @@ public class NewGameOptionsFrame extends Frame
         add(bp);
     }
 
-    private final static Color LABEL_TXT_COLOR = new Color(252, 251, 243); // off-white
-
-    /**
-     * Interface setup: Options.
-     * One row per option, except for 3-letter options which group with 2-letter ones.
-     * Boolean checkboxes go on the left edge; text and int/enum values are to right of checkboxes.
-     *<P>
-     * When showing options to create a new game, option keys starting with '_' are hidden
-     * unless the player nickname is "debug".  This prevents unwanted changes to those options,
-     * which are set at the server during game creation.  When the options are shown read-only
-     * during a game, these options are shown and not hidden.
-     *<P>
-     * Options which have {@link SOCGameOption#FLAG_INTERNAL_GAME_PROPERTY} are always hidden.
-     * If not {@link #readOnly}, they're removed from opts.  Unknown opts are always removed.
-     *<P>
-     * This is called from constructor, so this is a new NGOF being shown.
-     * If not read-only, clear {@link SOCGameOption#userChanged} flag for
-     * each option in {@link #opts}.
-     *<P>
-     * If options are null, put a label with "This server version does not support game options" (localized).
-     */
-    private void initInterface_Options(Panel bp, GridBagLayout gbl, GridBagConstraints gbc)
-    {
-        final boolean hideUnderscoreOpts = (! readOnly) && (! gameDisplay.nick.getText().equalsIgnoreCase("debug"));
-
-        Label L;
-
-        if (opts == null)
-        {
-            L = new Label(strings.get("game.options.not"));  // "This server version does not support game options."
-            L.setForeground(LABEL_TXT_COLOR);
-            gbc.gridwidth = GridBagConstraints.REMAINDER;
-            gbl.setConstraints(L, gbc);
-            bp.add(L);
-            return;  // <---- Early return: no options ----
-        }
-        else if (! readOnly)
-        {
-            for (SOCGameOption opt : opts.values())
-                opt.userChanged = false;  // clear flag from any previously shown NGOF
-        }
-
-        if (opts.containsKey("SC"))
-            allSc = SOCScenario.getAllKnownScenarios();
-
-        gbc.anchor = GridBagConstraints.WEST;
-
-        // Look for options that should be on the same
-        // line as other options (based on key length)
-        // instead of at the start of a line.
-        // TODO: for now these are on subsequent lines
-        //   instead of sharing the same line.
-        HashMap<String,String> sameLineOpts = new HashMap<String,String>();  // key=on-same-line opt, value=opt to start line
-        for (final String kf3 : opts.keySet())
-        {
-            if (kf3.length() <= 2)
-                continue;
-            final String kf2 = kf3.substring(0, 2);
-            if (opts.containsKey(kf2))
-                sameLineOpts.put(kf3, kf2);
-        }
-
-        // Sort and lay out options; remove unknowns and internal-onlys from opts.
-        // TreeSet sorts game options by description, using gameopt.compareTo.
-        // The array lets us remove from opts without disrupting an iterator.
-        SOCGameOption[] optArr = new TreeSet<SOCGameOption>(opts.values()).toArray(new SOCGameOption[0]);
-        for (int i = 0; i < optArr.length; ++i)
-        {
-            SOCGameOption op = optArr[i];
-            if (op.optType == SOCGameOption.OTYPE_UNKNOWN)
-            {
-                opts.remove(op.key);
-                continue;  // <-- Removed, Go to next entry --
-            }
-
-            if (op.hasFlag(SOCGameOption.FLAG_INTERNAL_GAME_PROPERTY))
-            {
-                if (! readOnly)
-                    opts.remove(op.key);  // ignore internal-property options when requesting new game from client
-                continue;  // <-- Don't show internal-property options
-            }
-
-            if (op.key.charAt(0) == '_')
-            {
-                if (hideUnderscoreOpts)
-                    continue;  // <-- Don't show options starting with '_'
-
-                if ((allSc != null) && allSc.containsKey(op.key.substring(1)))
-                    continue;  // <-- Don't show options which are scenario names (use SC dropdown to pick at most one)
-            }
-
-            if (sameLineOpts.containsKey(op.key))
-                continue;  // <-- Shares a line, Go to next entry --
-            final boolean sharesLine = sameLineOpts.containsValue(op.key);
-
-            initInterface_OptLine(op, bp, gbl, gbc);
-            if (sharesLine)
-            {
-                // Group them under this one.
-                // TODO group on same line, not following lines, if there's only 1.
-                for (final String kf3 : sameLineOpts.keySet())
-                {
-                    final String kf2 = sameLineOpts.get(kf3);
-                    if ((kf2 == null) || ! kf2.equals(op.key))
-                        continue;  // <-- Goes with a a different option --
-
-                    final SOCGameOption op3 = opts.get(kf3);
-                    if (op3 != null)
-                        initInterface_OptLine(op3, bp, gbl, gbc);
-                }
-            }
-
-        }  // for(opts)
-    }
-
-    /**
-     * Set up one game option in one line of the panel.
-     * Based on the option type, create the appropriate AWT component
-     * and call {@link #initInterface_Opt1(SOCGameOption, Component, boolean, boolean, Panel, GridBagLayout, GridBagConstraints)}.
-     *<P>
-     * Special handling: Scenario (option {@code "SC"}) gets a checkbox, label, dropdown, and a second line with
-     * an Info button. (Sets {@link #scenDropdown}, {@link #scenInfo}).
-     *
-     * @param op  Option data
-     * @param bp  Add to this panel
-     * @param gbl Use this layout
-     * @param gbc Use these constraints
-     */
-    private void initInterface_OptLine(SOCGameOption op, Panel bp, GridBagLayout gbl, GridBagConstraints gbc)
-    {
-        if (op.key.equals("SC"))
-        {
-            // special handling: Scenario
-            if ((allSc == null) || allSc.isEmpty())
-                return;
-
-            int i = 0, sel = 0;
-
-            JComboBox jcb = new JComboBox();
-            jcb.addItem(strings.get("base.none.parens"));  // "(none)" is item 0 in dropdown
-
-            Collection<SOCScenario> scens = allSc.values();
-            if (! readOnly)
-            {
-                // Sort by description.
-                // Don't sort if readOnly and thus dropdown not enabled, probably not browsable.
-
-                ArrayList<SOCScenario> sl = new ArrayList<SOCScenario>(scens);
-                Collections.sort(sl, new Comparator<SOCScenario>() {
-                    // This method isn't part of SOCScenario because that class already has
-                    // equals and compareTo methods comparing keys, not descriptions
-
-                    public int compare(SOCScenario a, SOCScenario b)
-                    {
-                        return a.getDesc().compareTo(b.getDesc());
-                    }
-                });
-                scens = sl;
-            }
-
-            for (final SOCScenario sc : scens)
-            {
-                ++i;
-                jcb.addItem(sc);  // sc.toString() == sc.desc
-                if (sc.key.equals(op.getStringValue()))
-                    sel = i;
-            }
-            if (sel != 0)
-            {
-                jcb.setSelectedIndex(sel);
-                op.setBoolValue(true);
-            }
-
-            scenDropdown = jcb;
-            scenDropdown.setEnabled(false);
-            initInterface_Opt1(op, jcb, true, true, bp, gbl, gbc);
-                // adds jcb, and a checkbox which will toggle this OTYPE_STR's op.boolValue
-
-            if ((! readOnly) || opts.containsKey("SC"))
-            {
-                // 2nd line: right-justified "Scenario Info..." button
-
-                Label blank = new Label();
-                gbc.gridwidth = 1;
-                gbl.setConstraints(blank, gbc);
-                bp.add(blank);
-                scenInfo = new Button(strings.get("game.options.scenario.info_btn"));  // "Scenario Info..."
-                scenInfo.addActionListener(this);
-                scenInfo.addKeyListener(this);
-                scenInfo.setEnabled(sel != 0);  // disable if "(none)" is selected scenario option
-
-                gbc.gridwidth = GridBagConstraints.REMAINDER;
-                final int oldAnchor = gbc.anchor, oldFill = gbc.fill;
-                gbc.fill = GridBagConstraints.NONE;
-                gbc.anchor = GridBagConstraints.EAST;
-                gbl.setConstraints(scenInfo, gbc);
-                bp.add(scenInfo);
-                gbc.fill = oldFill;
-                gbc.anchor = oldAnchor;
-            }
-
-            return;
-        }
-
-        switch (op.optType)  // OTYPE_*
-        {
-        case SOCGameOption.OTYPE_BOOL:
-            {
-                Checkbox cb = new Checkbox();
-                initInterface_Opt1(op, cb, true, false, bp, gbl, gbc);
-                cb.addItemListener(this);
-            }
-            break;
-
-        case SOCGameOption.OTYPE_INT:
-        case SOCGameOption.OTYPE_INTBOOL:
-            {
-                final boolean hasCheckbox = (op.optType == SOCGameOption.OTYPE_INTBOOL);
-                initInterface_Opt1(op, initOption_int(op), hasCheckbox, true, bp, gbl, gbc);
-            }
-            break;
-
-        case SOCGameOption.OTYPE_ENUM:
-        case SOCGameOption.OTYPE_ENUMBOOL:
-            // Choice (popup menu)
-            {
-                final boolean hasCheckbox = (op.optType == SOCGameOption.OTYPE_ENUMBOOL);
-                initInterface_Opt1(op, initOption_enum(op), hasCheckbox, true, bp, gbl, gbc);
-            }
-            break;
-
-        case SOCGameOption.OTYPE_STR:
-        case SOCGameOption.OTYPE_STRHIDE:
-            {
-                int txtwid = op.maxIntValue;  // used as max length
-                if (txtwid > 20)
-                    txtwid = 20;
-                final boolean doHide = (op.optType == SOCGameOption.OTYPE_STRHIDE);
-                String txtcontent = (doHide ? "" : op.getStringValue());
-                TextField txtc = new TextField(txtcontent, txtwid);
-                if (doHide)
-                {
-                    if (SOCPlayerClient.isJavaOnOSX)
-                        txtc.setEchoChar('\u2022');  // round bullet (option-8)
-                    else
-                        txtc.setEchoChar('*');
-                }
-                if (! readOnly)
-                {
-                    txtc.addKeyListener(this);  // for ESC/ENTER
-                    txtc.addTextListener(this); // for gameopt.ChangeListener and userChanged
-                }
-                initInterface_Opt1(op, txtc, false, false, bp, gbl, gbc);
-            }
-            break;
-
-            // default: unknown, ignore; see above
-        }
-    }
-
-    /**
-     * Add one GridBagLayout row with this game option (component and label(s)).
-     * The option's descriptive text may have "#" as a placeholder for where
-     * int/enum value is specified (IntTextField or Choice-dropdown).
-     * @param op  Option data
-     * @param oc  Component with option choices (popup menu, textfield, etc).
-     *            If oc is a {@link TextField} or {@link Choice}, and hasCB,
-     *            changing the component's value will set the checkbox.
-     *            <tt>oc</tt> will be added to {@link #optsControls} and {@link #controlsOpts}.
-     * @param hasCB  Add a checkbox?  If oc is {@link Checkbox}, set this true;
-     *            it won't add a second checkbox.
-     *            The checkbox will be added to {@link #boolOptCheckboxes} and {@link #controlsOpts}.
-     * @param allowPH  Allow the "#" placeholder within option desc?
-     * @param bp  Add to this panel
-     * @param gbl Use this layout
-     * @param gbc Use these constraints; gridwidth will be set to 1 and then REMAINDER
-     */
-    private void initInterface_Opt1(SOCGameOption op, Component oc,
-            boolean hasCB, boolean allowPH,
-            Panel bp, GridBagLayout gbl, GridBagConstraints gbc)
-    {
-        Label L;
-
-        gbc.gridwidth = 1;
-        if (hasCB)
-        {
-            Checkbox cb;
-            if (oc instanceof Checkbox)
-                cb = (Checkbox) oc;
-            else
-                cb = new Checkbox();
-            controlsOpts.put(cb, op);
-            cb.setState(op.getBoolValue());
-            cb.setEnabled(! readOnly);
-            gbl.setConstraints(cb, gbc);
-            bp.add(cb);
-            if (! readOnly)
-            {
-                boolOptCheckboxes.put(op.key, cb);
-                cb.addItemListener(this);  // for op's ChangeListener and userChanged
-            }
-        } else {
-            L = new Label();  // to fill checkbox's column
-            gbl.setConstraints(L, gbc);
-            bp.add(L);
-        }
-
-        final String opDesc = op.getDesc();
-        final int placeholderIdx = allowPH ? opDesc.indexOf('#') : -1;
-        Panel optp = new Panel();  // with FlowLayout
-        try
-        {
-            FlowLayout fl = (FlowLayout) (optp.getLayout());
-            fl.setAlignment(FlowLayout.LEFT);
-            fl.setVgap(0);
-            fl.setHgap(0);
-        }
-        catch (Throwable fle) {}
-
-        // Any text to the left of placeholder in op.desc?
-        if (placeholderIdx > 0)
-        {
-            L = new Label(opDesc.substring(0, placeholderIdx - 1));
-            L.setForeground(LABEL_TXT_COLOR);
-            optp.add(L);
-            if (hasCB && ! readOnly)
-            {
-                controlsOpts.put(L, op);
-                L.addMouseListener(this);  // Click label to toggle checkbox
-            }
-        }
-
-        // TextField or Choice or JComboBox at placeholder position
-        if (! (oc instanceof Checkbox))
-        {
-            controlsOpts.put(oc, op);
-            oc.setEnabled(! readOnly);
-            optp.add(oc);
-            if (hasCB && ! readOnly)
-            {
-                if (oc instanceof TextField)
-                {
-                    ((TextField) oc).addTextListener(this);  // for enable/disable
-                    ((TextField) oc).addKeyListener(this);   // for ESC/ENTER
-                }
-                else if (oc instanceof Choice)
-                {
-                    ((Choice) oc).addItemListener(this);  // for related cb, and op.ChangeListener and userChanged
-                }
-                else if (oc instanceof JComboBox)
-                {
-                    ((JComboBox) oc).addActionListener(this);  // for related cb, and op.ChangeListener and userChanged
-                }
-            }
-        }
-        if (! readOnly)
-            optsControls.put(op.key, oc);
-
-        // Any text to the right of placeholder?  Also creates
-        // the text label if there is no placeholder (placeholderIdx == -1).
-        if (placeholderIdx + 1 < opDesc.length())
-        {
-            L = new Label(opDesc.substring(placeholderIdx + 1));
-            L.setForeground(LABEL_TXT_COLOR);
-            optp.add(L);
-            if (hasCB && ! readOnly)
-            {
-                controlsOpts.put(L, op);
-                L.addMouseListener(this);  // Click label to toggle checkbox
-            }
-        }
-
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbl.setConstraints(optp, gbc);
-        bp.add(optp);
-    }
-
-    /**
-     * Natural log of 10. For use in {@link #initOption_int(SOCGameOption)}, to determine
-     * number of digits needed for the option in a textfield
-     * (not available in java 1.4)
-     */
-    private static final double LOG_10 = Math.log(10.0);
-
-    /**
-     * Based on this game option's type, present its intvalue either as
-     * a numeric textfield, or a popup menu if min/max are near each other.
-     * The maximum min/max distance which creates a popup is {@link #INTFIELD_POPUP_MAXRANGE}.
-     * @param op A SOCGameOption with an integer value, that is,
-     *           of type {@link SOCGameOption#OTYPE_INT OTYPE_INT}
-     *           or {@link SOCGameOption#OTYPE_INTBOOL OTYPE_INTBOOL}
-     * @return an IntTextField or {@link java.awt.Choice} (popup menu)
-     */
-    private Component initOption_int(SOCGameOption op)
-    {
-        // OTYPE_* - if a new type is added, update this method's javadoc.
-
-        int optrange = op.maxIntValue - op.minIntValue;
-        Component c;
-        if ((optrange > INTFIELD_POPUP_MAXRANGE) || (optrange < 0))
-        {
-            // IntTextField with width based on number of digits in min/max .
-            // Math.log10 isn't available in java 1.4, so we calculate it for now.
-            int amaxv = Math.abs(op.maxIntValue);
-            int aminv = Math.abs(op.minIntValue);
-            final int magn;
-            if (amaxv > aminv)
-                magn = amaxv;
-            else
-                magn = aminv;
-            int twidth = 1 + (int) Math.ceil(Math.log(magn)/LOG_10);
-            if (twidth < 3)
-                twidth = 3;
-            c = new IntTextField(op.getIntValue(), twidth);
-            ((TextField) c).addTextListener(this);  // for op.ChangeListener and userChanged
-        } else {
-            Choice ch = new Choice();
-            for (int i = op.minIntValue; i <= op.maxIntValue; ++i)
-                ch.add(Integer.toString(i));
-
-            int defaultIdx = op.getIntValue() - op.minIntValue;
-            if (defaultIdx > 0)
-                ch.select(defaultIdx);
-            ch.addItemListener(this);  // for op.ChangeListener and userChanged
-            c = ch;
-        }
-        return c;
-    }
-
-    /**
-     * Create a popup menu for the choices of this enum.
-     * @param op Game option, of type {@link SOCGameOption#OTYPE_ENUM OTYPE_ENUM}
-     *           or {@link SOCGameOption#OTYPE_ENUMBOOL OTYPE_ENUMBOOL}
-     */
-    private Choice initOption_enum(SOCGameOption op)
-    {
-        Choice ch = new Choice();
-        final String[] chs = op.enumVals;
-        for (int i = 0; i < chs.length; ++i)
-            ch.add(chs[i]);
-
-        int defaultIdx = op.getIntValue() - 1;  // enum numbering is 1-based
-        if (defaultIdx > 0)
-            ch.select(defaultIdx);
-        ch.addItemListener(this);  // for op.ChangeListener and userChanged
-        return ch;
-    }
-
-    /**
-     * When the window is shown, request focus on game name textfield.
-     * To make this window topmost, call {@code setVisible(true)} instead of {@link #requestFocus()}.
-     */
-    @Override
-    public void setVisible(boolean b)
-    {
-        super.setVisible(b);
-        if (b)
-        {
-            EventQueue.invokeLater(new Runnable()
-            {
-                public void run()
-                {
-                    toFront();  // needed on win32 at least
-                    gameName.requestFocus();
-                }
-            });
-        }
-    }
-
     /** React to button clicks */
     public void actionPerformed(ActionEvent ae)
     {
@@ -858,39 +373,6 @@ public class NewGameOptionsFrame extends Frame
             else if (src == cancel)
             {
                 clickCancel();
-            }
-            else if (src == scenInfo)
-            {
-                clickScenarioInfo();
-            }
-            else if (src == scenDropdown)
-            {
-                if (opts == null)
-                    return;
-                SOCGameOption optSC = opts.get("SC");
-                if (optSC == null)
-                    return;
-
-                Object scObj = scenDropdown.getSelectedItem();
-                boolean wantsSet = (scObj instanceof SOCScenario);  // item 0 is "(none)" string, not a scenario
-                optSC.setBoolValue(wantsSet);
-                if (wantsSet)
-                    optSC.setStringValue(((SOCScenario) scObj).key);
-                else
-                    optSC.setStringValue("");
-
-                if (scenInfo != null)
-                    scenInfo.setEnabled(wantsSet);
-
-                boolean choiceSetCB = false;
-                Checkbox cb = boolOptCheckboxes.get("SC");
-                if ((cb != null) && (wantsSet != cb.getState()))
-                {
-                    cb.setState(wantsSet);
-                    choiceSetCB = true;
-                }
-
-                fireUserChangedOptListeners(optSC, scenDropdown, wantsSet, choiceSetCB);
             }
         }
         catch(Throwable thr)
@@ -910,9 +392,9 @@ public class NewGameOptionsFrame extends Frame
     }
 
     /** "Connect..." from connect setup; check fields, etc */
-    private void clickCreate(final boolean checkOptionsMinVers)
+    public void clickCreate(final boolean checkOptionsMinVers)
     {
-        String gmName = gameName.getText().trim();
+        String gmName = gameNameStr;
         if (gmName.length() == 0)
         {
             return;  // Should not happen (button disabled by TextListener)
@@ -970,45 +452,6 @@ public class NewGameOptionsFrame extends Frame
         dispose();
     }
 
-    /**
-     * The "Scenario Info" button was clicked.
-     * Reads the current scenario, if any, from {@link #scenDropdown}.
-     * Calls {@link #showScenarioInfoDialog(SOCScenario, Map, int, SOCPlayerClient.GameAwtDisplay, Frame)}.
-     * @since 2.0.00
-     */
-    private void clickScenarioInfo()
-    {
-        if (scenDropdown == null)
-            return;  // should not happen, scenDropdown is created before scenInfo
-
-        final Object scObj = scenDropdown.getSelectedItem();
-        if ((scObj == null) || ! (scObj instanceof SOCScenario))
-            return;  // "(none)" item is a String, not a scenario
-
-        final SOCScenario scen = (SOCScenario) scObj;
-
-        // find game's vp_winner
-        int vpWinner = SOCGame.VP_WINNER_STANDARD;
-        boolean vpKnown = false;
-        if (opts != null)
-        {
-            SOCGameOption vp = opts.get("VP");
-            if (vp.getBoolValue())
-            {
-                vpWinner = vp.getIntValue();
-                vpKnown = true;
-            }
-        }
-        if (forNewGame && (! vpKnown) && scen.scOpts.contains("VP="))
-        {
-            final Map<String, SOCGameOption> scenOpts = SOCGameOption.parseOptionsToMap(scen.scOpts);
-            final SOCGameOption scOptVP = (scenOpts != null) ? scenOpts.get("VP") : null;
-            if (scOptVP != null)
-                vpWinner = scOptVP.getIntValue();
-        }
-
-        showScenarioInfoDialog(scen, null, vpWinner, gameDisplay, this);
-    }
 
     /** Dismiss the frame, and clear client's {@link GameAwtDisplay#newGameOptsFrame}
      *  reference to null if it's to this frame.
